@@ -8,24 +8,20 @@ get_air_quality() {
 }
 
 main() {
-  local update_interval=$((60 * $(get_tmux_option "@tmux-air_quality-interval" 15)))
+  local update_interval=$((30 * $(get_tmux_option "@tmux-air_quality-interval" 60)))
   local current_time=$(date "+%s")
   local previous_update=$(get_tmux_option "@air_quality-previous-update-time")
   local delta=$((current_time - previous_update))
-  echo $update_interval
-  echo $delta
-  echo $previous_update
 
   if [ -z "$previous_update" ] || [ $delta -ge $update_interval ]; then
-    local value=$(get_air_quality)
+    local airq_value=$(get_air_quality)
     if [ "$?" -eq 0 ]; then
       $(set_tmux_option "@air_quality-previous-update-time" "$current_time")
-      $(set_tmux_option "@air_quality-previous-value" "$value")
+      $(set_tmux_option "@air_quality-previous-value" "$airq_value")
     fi
   fi
 
   air_quality_value=$(get_tmux_option "@air_quality-previous-value")
-  echo $air_quality_value
   v=$(($air_quality_value+0))
   if (( $v < 120 )); then
     color="green"
