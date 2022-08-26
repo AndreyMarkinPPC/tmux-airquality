@@ -12,8 +12,9 @@ main() {
   local current_time=$(date "+%s")
   local previous_update=$(get_tmux_option "@air_quality-previous-update-time")
   local delta=$((current_time - previous_update))
+  local air_quality_previous_value=$(get_tmux_option "@air_quality-previous-value")
 
-  if [ -z "$previous_update" ] || [ $delta -ge $update_interval ]; then
+  if [ -z "$air_quality_previous_value" ] || [ -z "$previous_update" ] || [ $delta -ge $update_interval ]; then
     local airq_value=$(get_air_quality)
     if [ "$?" -eq 0 ]; then
       $(set_tmux_option "@air_quality-previous-update-time" "$current_time")
